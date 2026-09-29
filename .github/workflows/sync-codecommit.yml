@@ -1,0 +1,35 @@
+name: Sync to AWS CodeCommit via Access Key
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+      # AWS Access Iam User
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Push to CodeCommit
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          REPO_NAME: ${{ secrets.CODECOMMIT_REPO_NAME }}
+        run: |
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
+          git remote add codecommit https://git-codecommit.\({AWS_REGION}.amazonaws.com/v1/repos/\){REPO_NAME}
+          git push codecommit develop:develop
