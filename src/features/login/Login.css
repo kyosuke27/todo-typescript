@@ -91,6 +91,11 @@
   box-shadow: 0 0 0 3px var(--accent-bg, rgba(124, 58, 237, 0.12));
 }
 
+.login-form__field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
 .login-form__password {
   position: relative;
 }
@@ -120,6 +125,18 @@
   outline-offset: 2px;
 }
 
+.login-form__toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.login-form__error {
+  margin: 0;
+  color: #b42318 !important;
+  font-size: 14px !important;
+  line-height: 1.5;
+}
+
 .login-form__submit {
   min-height: 50px;
   margin-top: 6px;
@@ -146,6 +163,12 @@
 .login-form__submit:focus-visible {
   outline: 3px solid var(--accent-border, rgba(124, 58, 237, 0.5));
   outline-offset: 3px;
+}
+
+.login-form__submit:disabled {
+  cursor: not-allowed;
+  filter: none;
+  opacity: 0.65;
 }
 
 @media (max-width: 520px) {

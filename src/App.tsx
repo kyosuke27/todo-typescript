@@ -1,105 +1,46 @@
-import React, { useState } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
+import { getCurrentUser, signOut } from "aws-amplify/auth";
+import { Navigate, useLocation } from "react-router";
 
-function App() {
-  const [todos, setTodos] = useState<todo[]>([]);
-  const [inputText, setInputText] = useState<string>("");
+type AuthStatus = "CHECKING" | "SIGNED_IN" | "SIGNED_OUT";
 
-  type todo = {
-    id: number;
-    text: string;
-    isChecked: boolean;
-  };
+export default function App() {
+  const location = useLocation();
+  const [authStatus, setAuthStatus] = useState<AuthStatus>("CHECKING");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
-  };
-
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (inputText.trim() !== "") {
-      const newTodo: todo = {
-        id: todos.length,
-        text: inputText,
-        isChecked: false,
-      };
-      setTodos([...todos, newTodo]);
-      setInputText("");
-    }
-  };
-
-  const handleEdit = (id: number, text: string) => {
-    const newTodos: todo[] = todos.map((todo) => {
-      if (todo.id === id) {
-        todo.text = text;
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        await getCurrentUser();
+        setAuthStatus("SIGNED_IN");
+      } catch {
+        setAuthStatus("SIGNED_OUT");
       }
-      return todo;
-    });
-    setTodos(newTodos);
+    };
+
+    void checkAuthentication();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    setAuthStatus("SIGNED_OUT");
   };
 
-  const handleCheck = (id: number) => {
-    const newTodos: todo[] = todos.map((todo) => {
-      if (todo.id === id) {
-        todo.isChecked = !todo.isChecked;
-      }
-      return todo;
-    });
-    setTodos(newTodos);
-  };
+  if (authStatus === "CHECKING") {
+    return <p>認証状態を確認しています...</p>;
+  }
 
-  const handleDelete = (id: number) => {
-    const newTodos: todo[] = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
-  };
+  if (authStatus === "SIGNED_OUT") {
+    return <Navigate to="/" replace state={{ from: location }} />;
+  }
 
   return (
-    <div className="App">
-      <div className="">
-        <h2>Todo List with Typescript</h2>
-        <form
-          onSubmit={(e) => {
-            handleSubmit(e);
-          }}
-        >
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => handleChange(e)}
-            className="inputText"
-          />
-          <input type="submit" value="Add" className="submitButton" />
-        </form>
-        <ul className="todoList">
-          {todos.map((todo) => (
-            <li key={todo.id}>
-              <input
-                type="text"
-                className="inputText"
-                value={todo.text}
-                onChange={(e) => handleEdit(todo.id, e.target.value)}
-                disabled={todo.isChecked}
-              />
-              <input
-                type="checkbox"
-                className="inputText"
-                checked={todo.isChecked}
-                onChange={() => handleCheck(todo.id)}
-              />
-              <input
-                type="submit"
-                className="inputText"
-                value="delete"
-                onClick={() => {
-                  handleDelete(todo.id);
-                }}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <main>
+      <h1>ログイン済み</h1>
+
+      <button type="button" onClick={handleLogout}>
+        ログアウト
+      </button>
+    </main>
   );
 }
-
-export default App;
