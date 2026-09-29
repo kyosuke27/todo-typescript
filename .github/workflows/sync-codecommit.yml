@@ -31,5 +31,5 @@ jobs:
         run: |
           git config --global credential.helper '!aws codecommit credential-helper $@'
           git config --global credential.UseHttpPath true
-          git remote add codecommit "https://git-codecommit.\({AWS_REGION}.amazonaws.com/v1/repos/\){REPO_NAME}"
+          git remote add codecommit "https://git-codecommit.\(${AWS_REGION}.amazonaws.com/v1/repos/\)${REPO_NAME}"
           git push codecommit develop:develop
