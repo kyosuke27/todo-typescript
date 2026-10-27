@@ -25,6 +25,7 @@ phases:
           mkdir -p out
           echo "<h1>Pipeline Debug OK</h1>" > out/index.html
           echo "Dummy artifact created: out/index.html"
+          cp buildspec.yml out/
         fi
 # パイプラインに渡す成果物
 artifacts:
