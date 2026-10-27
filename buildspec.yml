@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "======== [PHASE :install] ========"
+      - echo "PIPELINE_STAGE=$PIPELINE_STAGE"
+  build:
+    commands:
+      - echo "======== [PHASE :build] ========"
+      - |
+        if [ "$PIPELINE_STAGE" = "deploy" ]; then
+          echo "=== 2回目: デプロイ模擬（Deploy Stage） ==="
+          echo "TARGET_S3_BUCKET: $TARGET_S3_BUCKET"
+          echo "展開されたファイル内容:"
+          cat index.html || echo "index.html が見つかりません"
+          
+          # 2回目のアーティファクト欠損エラー防止用
+          mkdir -p out && echo "deploy-complete" > out/deploy.txt
+        else
+          echo "=== 1回目: ビルド模擬（Build Stage） ==="
+          # パイプライン受け渡し用のダミー成果物を作成
+          mkdir -p out
+          echo "<h1>Pipeline Debug OK</h1>" > out/index.html
+          echo "Dummy artifact created: out/index.html"
+        fi
+# パイプラインに渡す成果物
+artifacts:
+  files:
+    - '**/*'
+    base-directory: out
