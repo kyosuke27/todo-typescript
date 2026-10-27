@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/*
+ * Tailwind v4のCSS-first設定として、アプリ固有の意味を持つデザイントークンを公開する。
+ * コンポーネントは具体的な色値ではなくtext-app-headingなどのユーティリティを利用するため、
+ * 配色変更やダークモード対応をこのファイルへ集約できる。
+ */
+@theme {
+  --color-app-text: #6b6375;
+  --color-app-heading: #08060d;
+  --color-app-surface: #ffffff;
+  --color-app-border: #e5e4e7;
+  --color-app-accent: #aa3bff;
+  --shadow-app:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+    font-size: 18px;
+    line-height: 145%;
+    letter-spacing: 0.18px;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @media (max-width: 1024px) {
+      font-size: 16px;
+    }
+  }
+
+  body {
+    @apply m-0 bg-app-surface text-app-text;
+  }
+
+  #root {
+    @apply mx-auto flex min-h-svh w-full flex-col border-x border-app-border text-center;
+  }
+}
+
+/* OSの配色設定に合わせ、同じ役割のTailwindトークンだけを暗色へ差し替える。 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-app-text: #9ca3af;
+    --color-app-heading: #f3f4f6;
+    --color-app-surface: #16171d;
+    --color-app-border: #2e303a;
+    --color-app-accent: #c084fc;
+    --shadow-app:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+}
